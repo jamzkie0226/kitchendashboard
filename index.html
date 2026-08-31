@@ -25,6 +25,11 @@
         margin: 10px;
         border-radius: 10px;
     }
+    input {
+        font-size: 20px;
+        padding: 10px;
+        width: 80%;
+    }
 </style>
 </head>
 
@@ -49,15 +54,22 @@
 </div>
 
 <div class="box">
-    ⏱ TIMER: <span id="timer">0s</span><br><br>
-    <button onclick="startTimer()">Start</button>
-    <button onclick="stopTimer()">Stop</button>
-    <button onclick="resetTimer()">Reset</button>
+    ⏱ TIMER: <span id="timer">00:00</span><br><br>
+
+    <button onclick="startCountdown(5)">5 min</button>
+    <button onclick="startCountdown(10)">10 min</button>
+    <button onclick="startCountdown(15)">15 min</button>
+    <button onclick="startCountdown(20)">20 min</button>
+    <button onclick="startCountdown(30)">30 min</button>
+
+    <br><br>
+    <button onclick="stopCountdown()">Stop</button>
+    <button onclick="resetCountdown()">Reset</button>
 </div>
 
 <div class="box">
     🛒 SHOPPING LIST<br><br>
-    <input id="itemInput" placeholder="Add item" style="font-size:20px;padding:10px;width:80%;">
+    <input id="itemInput" placeholder="Add item">
     <button onclick="addItem()">Add</button>
     <ul id="list" style="text-align:left;font-size:20px;"></ul>
 </div>
@@ -113,28 +125,52 @@ loadWeather();
 setInterval(loadWeather, 600000);
 </script>
 
-<!-- TIMER -->
+<!-- COUNTDOWN TIMER -->
 <script>
-var timerSeconds = 0;
-var timerInterval = null;
+var countdownSeconds = 0;
+var countdownInterval = null;
 
-function startTimer() {
-    if (timerInterval === null) {
-        timerInterval = setInterval(function () {
-            timerSeconds++;
-            document.getElementById("timer").innerHTML = timerSeconds + "s";
-        }, 1000);
-    }
+function startCountdown(minutes) {
+    stopCountdown();
+    countdownSeconds = minutes * 60;
+    updateCountdownDisplay();
+
+    countdownInterval = setInterval(function () {
+        countdownSeconds--;
+
+        if (countdownSeconds <= 0) {
+            countdownSeconds = 0;
+            updateCountdownDisplay();
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+            alert("Time's up!");
+            return;
+        }
+
+        updateCountdownDisplay();
+    }, 1000);
 }
 
-function stopTimer() {
-    clearInterval(timerInterval);
-    timerInterval = null;
+function stopCountdown() {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
 }
 
-function resetTimer() {
-    timerSeconds = 0;
-    document.getElementById("timer").innerHTML = "0s";
+function resetCountdown() {
+    stopCountdown();
+    countdownSeconds = 0;
+    updateCountdownDisplay();
+}
+
+function updateCountdownDisplay() {
+    var mins = Math.floor(countdownSeconds / 60);
+    var secs = countdownSeconds % 60;
+
+    var display =
+        ("0" + mins).slice(-2) + ":" +
+        ("0" + secs).slice(-2);
+
+    document.getElementById("timer").innerHTML = display;
 }
 </script>
 
