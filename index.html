@@ -6,44 +6,80 @@
 <style>
     body {
         font-family: Arial;
-        background: #f5f5f5;
+        background: #111;
+        color: #fff;
         padding: 20px;
         text-align: center;
     }
     .box {
-        background: white;
+        background: #222;
         padding: 20px;
         margin: 15px auto;
         width: 90%;
         border-radius: 12px;
         font-size: 22px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        box-shadow: 0 0 10px rgba(255,255,255,0.1);
     }
     button {
         padding: 10px 20px;
         font-size: 20px;
         margin: 10px;
         border-radius: 10px;
+        background: #444;
+        color: #fff;
+        border: none;
+    }
+    button:hover {
+        background: #666;
     }
     input {
         font-size: 20px;
         padding: 10px;
         width: 80%;
+        background: #333;
+        color: #fff;
+        border: 1px solid #555;
+        border-radius: 8px;
+    }
+    /* Side-by-side time columns */
+    .time-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    .time-col {
+        flex: 1;
+        background: #222;
+        padding: 20px;
+        border-radius: 12px;
+        font-size: 30px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+    .time-label {
+        font-size: 20px;
+        opacity: 0.8;
     }
 </style>
 </head>
 
 <body>
 
-<h1>MY KITCHEN</h1>
+<h1 style="color:#fff;">MY KITCHEN</h1>
 
-<div class="box">
-    🇬🇧 LOCAL TIME: <span id="localTime">--:--:--</span>
+<!-- SIDE-BY-SIDE CLOCKS -->
+<div class="time-row">
+    <div class="time-col">
+        <div class="time-label">🇬🇧 LOCAL TIME</div>
+        <div id="localTime">--:--:--</div>
+    </div>
+
+    <div class="time-col">
+        <div class="time-label">🇵🇭 PH TIME</div>
+        <div id="phTime">--:--:--</div>
+    </div>
 </div>
 
-<div class="box">
-    🇵🇭 PH TIME: <span id="phTime">--:--:--</span>
-</div>
+<br>
 
 <div class="box">
     🌤 HENDON WEATHER: <span id="weather">Loading weather...</span>
@@ -81,12 +117,12 @@ function updateClocks() {
     var nowPH = new Date(nowUK.getTime() + (8 * 60 * 60 * 1000));
 
     document.getElementById("localTime").innerHTML =
-        nowUK.getHours() + ":" +
+        ("0" + nowUK.getHours()).slice(-2) + ":" +
         ("0" + nowUK.getMinutes()).slice(-2) + ":" +
         ("0" + nowUK.getSeconds()).slice(-2);
 
     document.getElementById("phTime").innerHTML =
-        nowPH.getHours() + ":" +
+        ("0" + nowPH.getHours()).slice(-2) + ":" +
         ("0" + nowPH.getMinutes()).slice(-2) + ":" +
         ("0" + nowPH.getSeconds()).slice(-2);
 }
@@ -162,40 +198,4 @@ function resetCountdown() {
     updateCountdownDisplay();
 }
 
-function updateCountdownDisplay() {
-    var mins = Math.floor(countdownSeconds / 60);
-    var secs = countdownSeconds % 60;
-
-    var display =
-        ("0" + mins).slice(-2) + ":" +
-        ("0" + secs).slice(-2);
-
-    document.getElementById("timer").innerHTML = display;
-}
-</script>
-
-<!-- SHOPPING LIST -->
-<script>
-function loadList() {
-    var items = localStorage.getItem("shoppingList");
-    if (items) {
-        document.getElementById("list").innerHTML = items;
-    }
-}
-
-function addItem() {
-    var item = document.getElementById("itemInput").value;
-    if (item.length > 0) {
-        var current = localStorage.getItem("shoppingList") || "";
-        var updated = current + "<li>" + item + "</li>";
-        localStorage.setItem("shoppingList", updated);
-        document.getElementById("list").innerHTML = updated;
-        document.getElementById("itemInput").value = "";
-    }
-}
-
-loadList();
-</script>
-
-</body>
-</html>
+function updateCountdown
