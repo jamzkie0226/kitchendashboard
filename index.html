@@ -41,7 +41,6 @@
         border: 1px solid #555;
         border-radius: 8px;
     }
-    /* Side-by-side time columns */
     .time-row {
         display: flex;
         justify-content: space-between;
@@ -85,10 +84,15 @@
     🌤 HENDON WEATHER: <span id="weather">Loading weather...</span>
 </div>
 
+<!-- REMINDER -->
 <div class="box">
-    📖 RECIPES (coming soon)
+    🔔 REMINDER<br><br>
+    <input id="reminderInput" placeholder="Add reminder">
+    <button onclick="addReminder()">Add</button>
+    <ul id="reminderList" style="text-align:left;font-size:20px;"></ul>
 </div>
 
+<!-- TIMER -->
 <div class="box">
     ⏱ TIMER: <span id="timer">00:00</span><br><br>
 
@@ -103,6 +107,7 @@
     <button onclick="resetCountdown()">Reset</button>
 </div>
 
+<!-- SHOPPING LIST -->
 <div class="box">
     🛒 SHOPPING LIST<br><br>
     <input id="itemInput" placeholder="Add item">
@@ -131,12 +136,12 @@ updateClocks();
 setInterval(updateClocks, 1000);
 </script>
 
-<!-- WEATHER (OpenWeatherMap + old Safari compatible) -->
+<!-- WEATHER -->
 <script>
 function loadWeather() {
     var xhr = new XMLHttpRequest();
-    var apiKey = "cabcc9785f93a7bd8989d48fec90988d";  // <-- replace this
-    var lat = 51.5760;  // Hendon
+    var apiKey = "cabcc9785f93a7bd8989d48fec90988d";  
+    var lat = 51.5760;
     var lon = -0.2389;
 
     var url = "https://api.openweathermap.org/data/2.5/weather?lat=" 
@@ -198,4 +203,83 @@ function resetCountdown() {
     updateCountdownDisplay();
 }
 
-function updateCountdown
+function updateCountdownDisplay() {
+    var mins = Math.floor(countdownSeconds / 60);
+    var secs = countdownSeconds % 60;
+
+    var display =
+        ("0" + mins).slice(-2) + ":" +
+        ("0" + secs).slice(-2);
+
+    document.getElementById("timer").innerHTML = display;
+}
+</script>
+
+<!-- REMINDER (ADD + REMOVE) -->
+<script>
+function loadReminders() {
+    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+    var html = "";
+    for (var i = 0; i < items.length; i++) {
+        html += "<li>" + items[i] +
+                " <button onclick='removeReminder(" + i + ")'>❌</button></li>";
+    }
+    document.getElementById("reminderList").innerHTML = html;
+}
+
+function addReminder() {
+    var item = document.getElementById("reminderInput").value;
+    if (item.length > 0) {
+        var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+        items.push(item);
+        localStorage.setItem("reminderList", JSON.stringify(items));
+        document.getElementById("reminderInput").value = "";
+        loadReminders();
+    }
+}
+
+function removeReminder(index) {
+    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+    items.splice(index, 1);
+    localStorage.setItem("reminderList", JSON.stringify(items));
+    loadReminders();
+}
+
+loadReminders();
+</script>
+
+<!-- SHOPPING LIST (ADD + REMOVE) -->
+<script>
+function loadList() {
+    var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
+    var html = "";
+    for (var i = 0; i < items.length; i++) {
+        html += "<li>" + items[i] +
+                " <button onclick='removeItem(" + i + ")'>❌</button></li>";
+    }
+    document.getElementById("list").innerHTML = html;
+}
+
+function addItem() {
+    var item = document.getElementById("itemInput").value;
+    if (item.length > 0) {
+        var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
+        items.push(item);
+        localStorage.setItem("shoppingList", JSON.stringify(items));
+        document.getElementById("itemInput").value = "";
+        loadList();
+    }
+}
+
+function removeItem(index) {
+    var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
+    items.splice(index, 1);
+    localStorage.setItem("shoppingList", JSON.stringify(items));
+    loadList();
+}
+
+loadList();
+</script>
+
+</body>
+</html>
