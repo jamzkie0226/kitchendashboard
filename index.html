@@ -12,7 +12,7 @@
         text-align: center;
     }
 
-    /* Side-by-side layout */
+    /* Shared row layout */
     .row {
         display: flex;
         justify-content: space-between;
@@ -23,6 +23,7 @@
         margin-right: auto;
     }
 
+    /* Shared column layout */
     .col {
         flex: 1;
         background: #222;
@@ -32,7 +33,7 @@
         font-size: 22px;
     }
 
-    /* BIG CLOCKS */
+    /* Big clocks */
     .clock-col {
         font-size: 55px;
     }
@@ -101,14 +102,14 @@
     </div>
 </div>
 
-<!-- WEATHER (now same width as others) -->
+<!-- WEATHER (same width as other columns) -->
 <div class="row">
     <div class="col">
         🌤 HENDON WEATHER: <span id="weather">Loading weather...</span>
     </div>
 </div>
 
-<!-- REMINDER + TIMER SIDE BY SIDE -->
+<!-- REMINDER + TIMER -->
 <div class="row">
 
     <div class="col">
@@ -171,25 +172,32 @@ updateClocks();
 setInterval(updateClocks, 1000);
 </script>
 
-<!-- WEATHER SCRIPT -->
+<!-- YAHOO WEATHER SCRIPT -->
 <script>
 function loadWeather() {
     var xhr = new XMLHttpRequest();
-    var apiKey = "cabcc9785f93a7bd8989d48fec90988d";
-    var lat = 51.5760;
-    var lon = -0.2389;
 
-    var url = "https://api.openweathermap.org/data/2.5/weather?lat=" 
-              + lat + "&lon=" + lon + "&units=metric&appid=" + apiKey;
+    var url = "https://query.yahooapis.com/v1/public/yql?q=" +
+              "select%20item.condition%20from%20weather.forecast%20" +
+              "where%20woeid%20in%20" +
+              "(select%20woeid%20from%20geo.places(1)%20where%20text%3D'Hendon%2C%20UK')" +
+              "&format=json";
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var data = JSON.parse(xhr.responseText);
-            var temp = Math.round(data.main.temp);
-            var desc = data.weather[0].description;
 
-            document.getElementById("weather").innerHTML =
-                temp + "°C — " + desc;
+            try {
+                var condition = data.query.results.channel.item.condition;
+                var temp = condition.temp;
+                var text = condition.text;
+
+                document.getElementById("weather").innerHTML =
+                    temp + "°C — " + text;
+            } catch (e) {
+                document.getElementById("weather").innerHTML =
+                    "Weather unavailable";
+            }
         }
     };
 
