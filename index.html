@@ -1,235 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>My Kitchen</title>
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f1e8;color:#222;text-align:center}
-.container{max-width:950px;margin:auto;padding:14px}
-h1{font-size:34px;margin:6px 0 12px}
-.clocks{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.card,.panel{background:#fff;border-radius:18px;padding:16px;box-shadow:0 3px 10px #bbb;margin-bottom:14px}
-.label{font-size:18px;font-weight:bold}
-.clock{font-size:38px;font-weight:bold;margin:5px 0}
-.date{font-size:15px}
-.weather{font-size:21px;font-weight:bold}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-button{width:100%;min-height:82px;border:0;border-radius:16px;background:#fff;box-shadow:0 3px 8px #aaa;font-size:22px;font-weight:bold;padding:10px}
-button:active{transform:scale(.98)}
-.small{min-height:55px;font-size:18px}
-.hidden{display:none}
-h2{margin-top:0}
-textarea,input{width:96%;padding:12px;border:1px solid #bbb;border-radius:10px;font-size:19px;font-family:Arial}
-textarea{height:150px}
-#timer{font-size:58px;font-weight:bold;margin:12px}
-.recipe{text-align:left;padding:14px;margin:10px 0;background:#f7f7f7;border-radius:12px}
-.recipe h3{margin:0 0 8px}
-.item{display:flex;align-items:center;gap:10px;text-align:left;padding:8px;font-size:20px}
-.item input{width:25px;height:25px}
-@media(max-width:600px){.clock{font-size:30px}h1{font-size:30px}}
+    body {
+        font-family: Arial;
+        background: #f5f5f5;
+        padding: 20px;
+        text-align: center;
+    }
+    .box {
+        background: white;
+        padding: 20px;
+        margin: 15px auto;
+        width: 90%;
+        border-radius: 12px;
+        font-size: 22px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+        padding: 10px 20px;
+        font-size: 20px;
+        margin: 10px;
+        border-radius: 10px;
+    }
 </style>
 </head>
+
 <body>
-<div class="container">
 
-<h1>🍳 MY KITCHEN</h1>
+<h1>MY KITCHEN</h1>
 
-<div class="clocks">
-<div class="card">
-<div class="label">🇬🇧 LOCAL TIME</div>
-<div id="localClock" class="clock">--:--:--</div>
-<div id="localDate" class="date"></div>
-</div>
-<div class="card">
-<div class="label">🇵🇭 PH TIME</div>
-<div id="phClock" class="clock">--:--:--</div>
-<div id="phDate" class="date"></div>
-</div>
+<div class="box">
+    🇬🇧 LOCAL TIME: <span id="localTime">--:--:--</span>
 </div>
 
-<div class="card">
-<div class="label">🌤️ HENDON WEATHER</div>
-<div id="weather" class="weather">Loading weather...</div>
-<div id="weatherInfo" class="date"></div>
+<div class="box">
+    🇵🇭 PH TIME: <span id="phTime">--:--:--</span>
 </div>
 
-<div class="grid">
-<button onclick="show('recipes')">🍽️<br>RECIPES</button>
-<button onclick="show('timerPanel')">⏱️<br>TIMER</button>
-<button onclick="show('shopping')">🛒<br>SHOPPING LIST</button>
-<button onclick="show('notes')">📝<br>NOTES</button>
+<div class="box">
+    🌤 HENDON WEATHER: <span id="weather">Loading weather...</span>
 </div>
 
-<div id="recipes" class="panel hidden">
-<h2>🍽️ RECIPES</h2>
-
-<div class="recipe">
-<h3>🇵🇭 Chicken Adobo</h3>
-<p>Chicken, soy sauce, vinegar, garlic, bay leaf and pepper.</p>
-<p>Simmer until the chicken is tender and the sauce is reduced.</p>
+<div class="box">
+    📖 RECIPES (coming soon)
 </div>
 
-<div class="recipe">
-<h3>🍗 Air Fryer Chicken</h3>
-<p>Chicken, salt, pepper, garlic, paprika and a little oil.</p>
-<p>Air fry at 190°C until golden and cooked through.</p>
+<div class="box">
+    ⏱ TIMER: <span id="timer">0s</span><br><br>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="stopTimer()">Stop</button>
+    <button onclick="resetTimer()">Reset</button>
 </div>
 
-<div class="recipe">
-<h3>🍞 Simple Bread</h3>
-<p>Flour, yeast, water, salt, sugar and oil.</p>
-<p>Knead, allow to rise, shape and bake at 180°C until golden.</p>
+<div class="box">
+    🛒 SHOPPING LIST<br><br>
+    <input id="itemInput" placeholder="Add item" style="font-size:20px;padding:10px;width:80%;">
+    <button onclick="addItem()">Add</button>
+    <ul id="list" style="text-align:left;font-size:20px;"></ul>
 </div>
 
-<h3>Add Your Own Recipe</h3>
-<input id="recipeTitle" placeholder="Recipe name"><br><br>
-<textarea id="recipeText" placeholder="Ingredients and instructions"></textarea><br><br>
-<button class="small" onclick="addRecipe()">➕ SAVE RECIPE</button>
-<div id="customRecipes"></div>
-<br>
-<button class="small" onclick="home()">← HOME</button>
-</div>
-
-<div id="timerPanel" class="panel hidden">
-<h2>⏱️ COOKING TIMER</h2>
-<div id="timer">00:00</div>
-<div class="grid">
-<button class="small" onclick="startTimer(300)">5 MIN</button>
-<button class="small" onclick="startTimer(600)">10 MIN</button>
-<button class="small" onclick="startTimer(1200)">20 MIN</button>
-<button class="small" onclick="startTimer(1800)">30 MIN</button>
-</div>
-<br>
-<button class="small" onclick="stopTimer()">STOP / RESET</button>
-<br><br>
-<button class="small" onclick="home()">← HOME</button>
-</div>
-
-<div id="shopping" class="panel hidden">
-<h2>🛒 SHOPPING LIST</h2>
-<input id="shoppingInput" placeholder="Add item..." onkeydown="if(event.key==='Enter')addShopping()">
-<br><br>
-<button class="small" onclick="addShopping()">➕ ADD ITEM</button>
-<div id="shoppingItems"></div>
-<br>
-<button class="small" onclick="clearShopping()">CLEAR LIST</button>
-<br><br>
-<button class="small" onclick="home()">← HOME</button>
-</div>
-
-<div id="notes" class="panel hidden">
-<h2>📝 KITCHEN NOTES</h2>
-<textarea id="notesBox" placeholder="Recipe ideas, measurements, reminders..."></textarea>
-<br><br>
-<button class="small" onclick="saveNotes()">💾 SAVE NOTES</button>
-<br><br>
-<button class="small" onclick="home()">← HOME</button>
-</div>
-
-</div>
-
+<!-- CLOCKS -->
 <script>
-function updateClocks(){
-const now=new Date();
-const time={hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true};
-const date={weekday:'long',year:'numeric',month:'long',day:'numeric'};
-document.getElementById('localClock').textContent=new Intl.DateTimeFormat('en-GB',{...time,timeZone:'Europe/London'}).format(now);
-document.getElementById('localDate').textContent=new Intl.DateTimeFormat('en-GB',{...date,timeZone:'Europe/London'}).format(now);
-document.getElementById('phClock').textContent=new Intl.DateTimeFormat('en-GB',{...time,timeZone:'Asia/Manila'}).format(now);
-document.getElementById('phDate').textContent=new Intl.DateTimeFormat('en-GB',{...date,timeZone:'Asia/Manila'}).format(now);
-}
-setInterval(updateClocks,1000);updateClocks();
+function updateClocks() {
+    var nowUK = new Date();
+    var nowPH = new Date(nowUK.getTime() + (8 * 60 * 60 * 1000));
 
-function show(id){
-document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
-document.getElementById(id).classList.remove('hidden');
-window.scrollTo(0,0);
-}
-function home(){
-document.querySelectorAll('.panel').forEach(p=>p.classList.add('hidden'));
-window.scrollTo(0,0);
+    document.getElementById("localTime").innerHTML =
+        nowUK.getHours() + ":" +
+        ("0" + nowUK.getMinutes()).slice(-2) + ":" +
+        ("0" + nowUK.getSeconds()).slice(-2);
+
+    document.getElementById("phTime").innerHTML =
+        nowPH.getHours() + ":" +
+        ("0" + nowPH.getMinutes()).slice(-2) + ":" +
+        ("0" + nowPH.getSeconds()).slice(-2);
 }
 
-let timer=null,seconds=0;
-function startTimer(s){
-clearInterval(timer);seconds=s;updateTimer();
-timer=setInterval(function(){
-seconds--;updateTimer();
-if(seconds<=0){clearInterval(timer);timer=null;alert('⏰ TIMER FINISHED!');}
-},1000);
-}
-function updateTimer(){
-let m=Math.floor(seconds/60),s=seconds%60;
-document.getElementById('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-}
-function stopTimer(){clearInterval(timer);timer=null;seconds=0;updateTimer();}
-
-function saveNotes(){
-localStorage.setItem('kitchenNotes',document.getElementById('notesBox').value);
-alert('📝 Notes saved!');
-}
-document.getElementById('notesBox').value=localStorage.getItem('kitchenNotes')||'';
-
-let shopping=JSON.parse(localStorage.getItem('kitchenShopping')||'[]');
-function renderShopping(){
-const box=document.getElementById('shoppingItems');box.innerHTML='';
-shopping.forEach((item,i)=>{
-const row=document.createElement('div');row.className='item';
-const check=document.createElement('input');check.type='checkbox';check.checked=item.done;
-const text=document.createElement('span');text.style.flex='1';text.textContent=item.text;
-if(item.done)text.style.textDecoration='line-through';
-check.onchange=function(){shopping[i].done=check.checked;saveShopping()};
-const del=document.createElement('button');del.className='small';del.style.width='auto';del.textContent='DELETE';
-del.onclick=function(){shopping.splice(i,1);saveShopping()};
-row.appendChild(check);row.appendChild(text);row.appendChild(del);box.appendChild(row);
-});
-}
-function addShopping(){
-const input=document.getElementById('shoppingInput'),text=input.value.trim();
-if(!text)return;shopping.push({text:text,done:false});input.value='';saveShopping();
-}
-function saveShopping(){localStorage.setItem('kitchenShopping',JSON.stringify(shopping));renderShopping()}
-function clearShopping(){if(confirm('Clear the shopping list?')){shopping=[];saveShopping()}}
-renderShopping();
-
-let recipes=JSON.parse(localStorage.getItem('kitchenRecipes')||'[]');
-function renderRecipes(){
-const box=document.getElementById('customRecipes');box.innerHTML='';
-recipes.forEach((r,i)=>{
-const div=document.createElement('div');div.className='recipe';
-const h=document.createElement('h3');h.textContent='🍴 '+r.title;
-const p=document.createElement('p');p.textContent=r.text;
-const b=document.createElement('button');b.className='small';b.textContent='DELETE';
-b.onclick=function(){recipes.splice(i,1);localStorage.setItem('kitchenRecipes',JSON.stringify(recipes));renderRecipes()};
-div.appendChild(h);div.appendChild(p);div.appendChild(b);box.appendChild(div);
-});
-}
-function addRecipe(){
-const title=document.getElementById('recipeTitle').value.trim();
-const text=document.getElementById('recipeText').value.trim();
-if(!title||!text){alert('Please enter a recipe name and details.');return}
-recipes.push({title:title,text:text});
-localStorage.setItem('kitchenRecipes',JSON.stringify(recipes));
-document.getElementById('recipeTitle').value='';
-document.getElementById('recipeText').value='';
-renderRecipes();
-}
-renderRecipes();
-
-async function loadWeather(){
-const w=document.getElementById('weather'),info=document.getElementById('weatherInfo');
-try{
-const url='https://api.open-meteo.com/v1/forecast?latitude=51.5876&longitude=-0.2214&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=Europe%2FLondon';
-const r=await fetch(url);if(!r.ok)throw Error();
-const d=await r.json(),c=d.current;
-const names={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Foggy',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy rain showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
-w.textContent=(names[c.weather_code]||'Weather')+' • '+Math.round(c.temperature_2m)+'°C';
-info.textContent='Feels like '+Math.round(c.apparent_temperature)+'°C • Wind '+Math.round(c.wind_speed_10m)+' km/h';
-}catch(e){w.textContent='Weather unavailable';info.textContent='Connect the iPad to the internet for weather.'}
-}
-loadWeather();setInterval(loadWeather,900000);
+updateClocks();
+setInterval(updateClocks, 1000);
 </script>
+
+<!-- WEATHER (OpenWeatherMap + old Safari compatible) -->
+<script>
+function loadWeather() {
+    var xhr = new XMLHttpRequest();
+    var apiKey = "YOUR_API_KEY_HERE";  // <-- replace this
+    var lat = 51.5760;  // Hendon
+    var lon = -0.2389;
+
+    var url = "https://api.openweathermap.org/data/2.5/weather?lat=" 
+              + lat + "&lon=" + lon + "&units=metric&appid=" + apiKey;
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText);
+            var temp = Math.round(data.main.temp);
+            var desc = data.weather[0].description;
+
+            document.getElementById("weather").innerHTML =
+                temp + "°C — " + desc;
+        }
+    };
+
+    xhr.open("GET", url, true);
+    xhr.send();
+}
+
+loadWeather();
+setInterval(loadWeather, 600000);
+</script>
+
+<!-- TIMER -->
+<script>
+var timerSeconds = 0;
+var timerInterval = null;
+
+function startTimer() {
+    if (timerInterval === null) {
+        timerInterval = setInterval(function () {
+            timerSeconds++;
+            document.getElementById("timer").innerHTML = timerSeconds + "s";
+        }, 1000);
+    }
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+function resetTimer() {
+    timerSeconds = 0;
+    document.getElementById("timer").innerHTML = "0s";
+}
+</script>
+
+<!-- SHOPPING LIST -->
+<script>
+function loadList() {
+    var items = localStorage.getItem("shoppingList");
+    if (items) {
+        document.getElementById("list").innerHTML = items;
+    }
+}
+
+function addItem() {
+    var item = document.getElementById("itemInput").value;
+    if (item.length > 0) {
+        var current = localStorage.getItem("shoppingList") || "";
+        var updated = current + "<li>" + item + "</li>";
+        localStorage.setItem("shoppingList", updated);
+        document.getElementById("list").innerHTML = updated;
+        document.getElementById("itemInput").value = "";
+    }
+}
+
+loadList();
+</script>
+
 </body>
 </html>
