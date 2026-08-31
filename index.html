@@ -169,15 +169,16 @@ updateClocks();
 setInterval(updateClocks, 1000);
 </script>
 
-<!-- WEATHERAPI SCRIPT -->
+<!-- WEATHERAPI AUTO-IP SCRIPT -->
 <script>
 function loadWeather() {
     var xhr = new XMLHttpRequest();
 
     var apiKey = "49b2f6117897475e850194206263108";
 
+    // Auto-IP lookup (works on old iPads)
     var url = "https://api.weatherapi.com/v1/current.json?key=" 
-              + apiKey + "&q=Hendon&aqi=no";
+              + apiKey + "&q=auto:ip&aqi=no";
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -237,3 +238,55 @@ function startCountdown(minutes) {
 function stopCountdown() {
     clearInterval(countdownInterval);
     countdownInterval = null;
+}
+
+function resetCountdown() {
+    stopCountdown();
+    countdownSeconds = 0;
+    updateCountdownDisplay();
+}
+
+function updateCountdownDisplay() {
+    var mins = Math.floor(countdownSeconds / 60);
+    var secs = countdownSeconds % 60;
+
+    document.getElementById("timer").innerHTML =
+        ("0" + mins).slice(-2) + ":" + ("0" + secs).slice(-2);
+}
+</script>
+
+<!-- REMINDER SCRIPT -->
+<script>
+function loadReminders() {
+    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+    var html = "";
+    for (var i = 0; i < items.length; i++) {
+        html += "<li>" + items[i] +
+                " <button onclick='removeReminder(" + i + ")'>❌</button></li>";
+    }
+    document.getElementById("reminderList").innerHTML = html;
+}
+
+function addReminder() {
+    var item = document.getElementById("reminderInput").value;
+    if (item.length > 0) {
+        var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+        items.push(item);
+        localStorage.setItem("reminderList", JSON.stringify(items));
+        document.getElementById("reminderInput").value = "";
+        loadReminders();
+    }
+}
+
+function removeReminder(index) {
+    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+    items.splice(index, 1);
+    localStorage.setItem("reminderList", JSON.stringify(items));
+    loadReminders();
+}
+
+loadReminders();
+</script>
+
+</body>
+</html>
