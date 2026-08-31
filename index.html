@@ -12,7 +12,6 @@
         text-align: center;
     }
 
-    /* Shared row layout */
     .row {
         display: flex;
         justify-content: space-between;
@@ -23,7 +22,6 @@
         margin-right: auto;
     }
 
-    /* Shared column layout */
     .col {
         flex: 1;
         background: #222;
@@ -33,7 +31,6 @@
         font-size: 22px;
     }
 
-    /* Big clocks */
     .clock-col {
         font-size: 55px;
     }
@@ -102,7 +99,7 @@
     </div>
 </div>
 
-<!-- WEATHER (same width as other columns) -->
+<!-- WEATHER -->
 <div class="row">
     <div class="col">
         🌤 HENDON WEATHER: <span id="weather">Loading weather...</span>
@@ -172,29 +169,27 @@ updateClocks();
 setInterval(updateClocks, 1000);
 </script>
 
-<!-- YAHOO WEATHER SCRIPT -->
+<!-- WEATHERAPI SCRIPT -->
 <script>
 function loadWeather() {
     var xhr = new XMLHttpRequest();
 
-    var url = "https://query.yahooapis.com/v1/public/yql?q=" +
-              "select%20item.condition%20from%20weather.forecast%20" +
-              "where%20woeid%20in%20" +
-              "(select%20woeid%20from%20geo.places(1)%20where%20text%3D'Hendon%2C%20UK')" +
-              "&format=json";
+    var apiKey = "49b2f6117897475e850194206263108";
+
+    var url = "https://api.weatherapi.com/v1/current.json?key=" 
+              + apiKey + "&q=Hendon&aqi=no";
 
     xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.responseText);
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
 
-            try {
-                var condition = data.query.results.channel.item.condition;
-                var temp = condition.temp;
-                var text = condition.text;
+                var temp = data.current.temp_c;
+                var text = data.current.condition.text;
 
                 document.getElementById("weather").innerHTML =
                     temp + "°C — " + text;
-            } catch (e) {
+            } else {
                 document.getElementById("weather").innerHTML =
                     "Weather unavailable";
             }
@@ -209,7 +204,7 @@ loadWeather();
 setInterval(loadWeather, 600000);
 </script>
 
-<!-- COUNTDOWN TIMER SCRIPT -->
+<!-- TIMER SCRIPT -->
 <script>
 var countdownSeconds = 0;
 var countdownInterval = null;
@@ -242,55 +237,3 @@ function startCountdown(minutes) {
 function stopCountdown() {
     clearInterval(countdownInterval);
     countdownInterval = null;
-}
-
-function resetCountdown() {
-    stopCountdown();
-    countdownSeconds = 0;
-    updateCountdownDisplay();
-}
-
-function updateCountdownDisplay() {
-    var mins = Math.floor(countdownSeconds / 60);
-    var secs = countdownSeconds % 60;
-
-    document.getElementById("timer").innerHTML =
-        ("0" + mins).slice(-2) + ":" + ("0" + secs).slice(-2);
-}
-</script>
-
-<!-- REMINDER SCRIPT -->
-<script>
-function loadReminders() {
-    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
-    var html = "";
-    for (var i = 0; i < items.length; i++) {
-        html += "<li>" + items[i] +
-                " <button onclick='removeReminder(" + i + ")'>❌</button></li>";
-    }
-    document.getElementById("reminderList").innerHTML = html;
-}
-
-function addReminder() {
-    var item = document.getElementById("reminderInput").value;
-    if (item.length > 0) {
-        var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
-        items.push(item);
-        localStorage.setItem("reminderList", JSON.stringify(items));
-        document.getElementById("reminderInput").value = "";
-        loadReminders();
-    }
-}
-
-function removeReminder(index) {
-    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
-    items.splice(index, 1);
-    localStorage.setItem("reminderList", JSON.stringify(items));
-    loadReminders();
-}
-
-loadReminders();
-</script>
-
-</body>
-</html>
