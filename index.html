@@ -106,24 +106,10 @@
     🌤 HENDON WEATHER: <span id="weather">Loading weather...</span>
 </div>
 
-<!-- TIMER (full width) -->
-<div class="full-box">
-    ⏱ TIMER: <span id="timer">00:00</span><br><br>
-
-    <button onclick="startCountdown(5)">5 min</button>
-    <button onclick="startCountdown(10)">10 min</button>
-    <button onclick="startCountdown(15)">15 min</button>
-    <button onclick="startCountdown(20)">20 min</button>
-    <button onclick="startCountdown(30)">30 min</button>
-
-    <br><br>
-    <button onclick="stopCountdown()">Stop</button>
-    <button onclick="resetCountdown()">Reset</button>
-</div>
-
-<!-- REMINDER + SHOPPING LIST SIDE BY SIDE -->
+<!-- REMINDER + TIMER SIDE BY SIDE -->
 <div class="row">
 
+    <!-- REMINDER COLUMN -->
     <div class="col" style="font-size:22px;">
         🔔 REMINDER<br><br>
         <input id="reminderInput" placeholder="Add reminder">
@@ -131,14 +117,27 @@
         <ul id="reminderList" style="text-align:left;font-size:20px;"></ul>
     </div>
 
+    <!-- TIMER COLUMN -->
     <div class="col" style="font-size:22px;">
-        🛒 SHOPPING LIST<br><br>
-        <input id="itemInput" placeholder="Add item">
-        <button onclick="addItem()">Add</button>
-        <ul id="list" style="text-align:left;font-size:20px;"></ul>
+        ⏱ TIMER: <span id="timer">00:00</span><br><br>
+
+        <button onclick="startCountdown(5)">5 min</button>
+        <button onclick="startCountdown(10)">10 min</button>
+        <button onclick="startCountdown(15)">15 min</button>
+        <button onclick="startCountdown(20)">20 min</button>
+        <button onclick="startCountdown(30)">30 min</button>
+
+        <br><br>
+        <button onclick="stopCountdown()">Stop</button>
+        <button onclick="resetCountdown()">Reset</button>
     </div>
 
 </div>
+
+<!-- TIMER SOUND -->
+<audio id="alarmSound">
+    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+</audio>
 
 <!-- CLOCK SCRIPT -->
 <script>
@@ -209,6 +208,10 @@ function startCountdown(minutes) {
             updateCountdownDisplay();
             clearInterval(countdownInterval);
             countdownInterval = null;
+
+            var audio = document.getElementById("alarmSound");
+            audio.play();
+
             alert("Time's up!");
             return;
         }
@@ -268,39 +271,6 @@ function removeReminder(index) {
 }
 
 loadReminders();
-</script>
-
-<!-- SHOPPING LIST SCRIPT -->
-<script>
-function loadList() {
-    var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
-    var html = "";
-    for (var i = 0; i < items.length; i++) {
-        html += "<li>" + items[i] +
-                " <button onclick='removeItem(" + i + ")'>❌</button></li>";
-    }
-    document.getElementById("list").innerHTML = html;
-}
-
-function addItem() {
-    var item = document.getElementById("itemInput").value;
-    if (item.length > 0) {
-        var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
-        items.push(item);
-        localStorage.setItem("shoppingList", JSON.stringify(items));
-        document.getElementById("itemInput").value = "";
-        loadList();
-    }
-}
-
-function removeItem(index) {
-    var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
-    items.splice(index, 1);
-    localStorage.setItem("shoppingList", JSON.stringify(items));
-    loadList();
-}
-
-loadList();
 </script>
 
 </body>
