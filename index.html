@@ -169,27 +169,28 @@ updateClocks();
 setInterval(updateClocks, 1000);
 </script>
 
-<!-- WEATHERAPI AUTO-IP SCRIPT -->
+<!-- WEATHER SCRIPT (GitHub Proxy) -->
 <script>
 function loadWeather() {
     var xhr = new XMLHttpRequest();
 
-    var apiKey = "49b2f6117897475e850194206263108";
-
-    // Auto-IP lookup (works on old iPads)
-    var url = "https://api.weatherapi.com/v1/current.json?key=" 
-              + apiKey + "&q=auto:ip&aqi=no";
+    var url = "https://raw.githubusercontent.com/jamzkie0226/weather-proxy/main/weather.json";
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
+                try {
+                    var data = JSON.parse(xhr.responseText);
 
-                var temp = data.current.temp_c;
-                var text = data.current.condition.text;
+                    var temp = data.current.temp_c;
+                    var text = data.current.condition.text;
 
-                document.getElementById("weather").innerHTML =
-                    temp + "°C — " + text;
+                    document.getElementById("weather").innerHTML =
+                        temp + "°C — " + text;
+                } catch (e) {
+                    document.getElementById("weather").innerHTML =
+                        "Weather unavailable";
+                }
             } else {
                 document.getElementById("weather").innerHTML =
                     "Weather unavailable";
