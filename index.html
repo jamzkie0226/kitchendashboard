@@ -12,23 +12,15 @@
         text-align: center;
     }
 
-    /* Full-width boxes */
-    .full-box {
-        background: #222;
-        padding: 20px;
-        margin: 15px auto;
-        width: 90%;
-        border-radius: 12px;
-        font-size: 22px;
-        box-shadow: 0 0 10px rgba(255,255,255,0.1);
-    }
-
     /* Side-by-side layout */
     .row {
         display: flex;
         justify-content: space-between;
         gap: 10px;
         margin-top: 20px;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .col {
@@ -37,6 +29,7 @@
         padding: 20px;
         border-radius: 12px;
         box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        font-size: 22px;
     }
 
     /* BIG CLOCKS */
@@ -108,22 +101,24 @@
     </div>
 </div>
 
-<!-- WEATHER (full width) -->
-<div class="full-box">
-    🌤 HENDON WEATHER: <span id="weather">Loading weather...</span>
+<!-- WEATHER (now same width as others) -->
+<div class="row">
+    <div class="col">
+        🌤 HENDON WEATHER: <span id="weather">Loading weather...</span>
+    </div>
 </div>
 
 <!-- REMINDER + TIMER SIDE BY SIDE -->
 <div class="row">
 
-    <div class="col" style="font-size:22px;">
+    <div class="col">
         🔔 REMINDER<br><br>
         <input id="reminderInput" placeholder="Add reminder">
         <button onclick="addReminder()">Add</button>
         <ul id="reminderList" style="text-align:left;font-size:20px;"></ul>
     </div>
 
-    <div class="col" style="font-size:22px;">
+    <div class="col">
         ⏱ TIMER: <span id="timer">00:00</span><br><br>
 
         <button onclick="startCountdown(5)">5 min</button>
@@ -198,4 +193,96 @@ function loadWeather() {
         }
     };
 
-    xhr.open("GET", url, true
+    xhr.open("GET", url, true);
+    xhr.send();
+}
+
+loadWeather();
+setInterval(loadWeather, 600000);
+</script>
+
+<!-- COUNTDOWN TIMER SCRIPT -->
+<script>
+var countdownSeconds = 0;
+var countdownInterval = null;
+
+function startCountdown(minutes) {
+    stopCountdown();
+    countdownSeconds = minutes * 60;
+    updateCountdownDisplay();
+
+    countdownInterval = setInterval(function () {
+        countdownSeconds--;
+
+        if (countdownSeconds <= 0) {
+            countdownSeconds = 0;
+            updateCountdownDisplay();
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+
+            var audio = document.getElementById("alarmSound");
+            audio.play();
+
+            alert("Time's up!");
+            return;
+        }
+
+        updateCountdownDisplay();
+    }, 1000);
+}
+
+function stopCountdown() {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+}
+
+function resetCountdown() {
+    stopCountdown();
+    countdownSeconds = 0;
+    updateCountdownDisplay();
+}
+
+function updateCountdownDisplay() {
+    var mins = Math.floor(countdownSeconds / 60);
+    var secs = countdownSeconds % 60;
+
+    document.getElementById("timer").innerHTML =
+        ("0" + mins).slice(-2) + ":" + ("0" + secs).slice(-2);
+}
+</script>
+
+<!-- REMINDER SCRIPT -->
+<script>
+function loadReminders() {
+    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+    var html = "";
+    for (var i = 0; i < items.length; i++) {
+        html += "<li>" + items[i] +
+                " <button onclick='removeReminder(" + i + ")'>❌</button></li>";
+    }
+    document.getElementById("reminderList").innerHTML = html;
+}
+
+function addReminder() {
+    var item = document.getElementById("reminderInput").value;
+    if (item.length > 0) {
+        var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+        items.push(item);
+        localStorage.setItem("reminderList", JSON.stringify(items));
+        document.getElementById("reminderInput").value = "";
+        loadReminders();
+    }
+}
+
+function removeReminder(index) {
+    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+    items.splice(index, 1);
+    localStorage.setItem("reminderList", JSON.stringify(items));
+    loadReminders();
+}
+
+loadReminders();
+</script>
+
+</body>
+</html>
