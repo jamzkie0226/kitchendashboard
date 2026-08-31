@@ -41,21 +41,26 @@
         border: 1px solid #555;
         border-radius: 8px;
     }
+
+    /* Side-by-side layout */
     .time-row {
         display: flex;
         justify-content: space-between;
         gap: 10px;
     }
+
+    /* BIGGER CLOCKS */
     .time-col {
         flex: 1;
         background: #222;
         padding: 20px;
         border-radius: 12px;
-        font-size: 30px;
+        font-size: 70px;   /* MASSIVE CLOCK SIZE */
         box-shadow: 0 0 10px rgba(255,255,255,0.1);
     }
+
     .time-label {
-        font-size: 20px;
+        font-size: 25px;
         opacity: 0.8;
     }
 </style>
@@ -84,12 +89,25 @@
     🌤 HENDON WEATHER: <span id="weather">Loading weather...</span>
 </div>
 
-<!-- REMINDER -->
-<div class="box">
-    🔔 REMINDER<br><br>
-    <input id="reminderInput" placeholder="Add reminder">
-    <button onclick="addReminder()">Add</button>
-    <ul id="reminderList" style="text-align:left;font-size:20px;"></ul>
+<!-- REMINDER + SHOPPING LIST SIDE BY SIDE -->
+<div class="time-row">
+
+    <!-- REMINDER COLUMN -->
+    <div class="time-col" style="font-size:22px;">
+        🔔 REMINDER<br><br>
+        <input id="reminderInput" placeholder="Add reminder">
+        <button onclick="addReminder()">Add</button>
+        <ul id="reminderList" style="text-align:left;font-size:20px;"></ul>
+    </div>
+
+    <!-- SHOPPING LIST COLUMN -->
+    <div class="time-col" style="font-size:22px;">
+        🛒 SHOPPING LIST<br><br>
+        <input id="itemInput" placeholder="Add item">
+        <button onclick="addItem()">Add</button>
+        <ul id="list" style="text-align:left;font-size:20px;"></ul>
+    </div>
+
 </div>
 
 <!-- TIMER -->
@@ -105,14 +123,6 @@
     <br><br>
     <button onclick="stopCountdown()">Stop</button>
     <button onclick="resetCountdown()">Reset</button>
-</div>
-
-<!-- SHOPPING LIST -->
-<div class="box">
-    🛒 SHOPPING LIST<br><br>
-    <input id="itemInput" placeholder="Add item">
-    <button onclick="addItem()">Add</button>
-    <ul id="list" style="text-align:left;font-size:20px;"></ul>
 </div>
 
 <!-- CLOCKS -->
@@ -140,7 +150,7 @@ setInterval(updateClocks, 1000);
 <script>
 function loadWeather() {
     var xhr = new XMLHttpRequest();
-    var apiKey = "cabcc9785f93a7bd8989d48fec90988d";  
+    var apiKey = "cabcc9785f93a7bd8989d48fec90988d";
     var lat = 51.5760;
     var lon = -0.2389;
 
@@ -203,83 +213,4 @@ function resetCountdown() {
     updateCountdownDisplay();
 }
 
-function updateCountdownDisplay() {
-    var mins = Math.floor(countdownSeconds / 60);
-    var secs = countdownSeconds % 60;
-
-    var display =
-        ("0" + mins).slice(-2) + ":" +
-        ("0" + secs).slice(-2);
-
-    document.getElementById("timer").innerHTML = display;
-}
-</script>
-
-<!-- REMINDER (ADD + REMOVE) -->
-<script>
-function loadReminders() {
-    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
-    var html = "";
-    for (var i = 0; i < items.length; i++) {
-        html += "<li>" + items[i] +
-                " <button onclick='removeReminder(" + i + ")'>❌</button></li>";
-    }
-    document.getElementById("reminderList").innerHTML = html;
-}
-
-function addReminder() {
-    var item = document.getElementById("reminderInput").value;
-    if (item.length > 0) {
-        var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
-        items.push(item);
-        localStorage.setItem("reminderList", JSON.stringify(items));
-        document.getElementById("reminderInput").value = "";
-        loadReminders();
-    }
-}
-
-function removeReminder(index) {
-    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
-    items.splice(index, 1);
-    localStorage.setItem("reminderList", JSON.stringify(items));
-    loadReminders();
-}
-
-loadReminders();
-</script>
-
-<!-- SHOPPING LIST (ADD + REMOVE) -->
-<script>
-function loadList() {
-    var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
-    var html = "";
-    for (var i = 0; i < items.length; i++) {
-        html += "<li>" + items[i] +
-                " <button onclick='removeItem(" + i + ")'>❌</button></li>";
-    }
-    document.getElementById("list").innerHTML = html;
-}
-
-function addItem() {
-    var item = document.getElementById("itemInput").value;
-    if (item.length > 0) {
-        var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
-        items.push(item);
-        localStorage.setItem("shoppingList", JSON.stringify(items));
-        document.getElementById("itemInput").value = "";
-        loadList();
-    }
-}
-
-function removeItem(index) {
-    var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
-    items.splice(index, 1);
-    localStorage.setItem("shoppingList", JSON.stringify(items));
-    loadList();
-}
-
-loadList();
-</script>
-
-</body>
-</html>
+function
