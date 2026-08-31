@@ -11,7 +11,9 @@
         padding: 20px;
         text-align: center;
     }
-    .box {
+
+    /* Full-width boxes */
+    .full-box {
         background: #222;
         padding: 20px;
         margin: 15px auto;
@@ -20,6 +22,33 @@
         font-size: 22px;
         box-shadow: 0 0 10px rgba(255,255,255,0.1);
     }
+
+    /* Side-by-side layout */
+    .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .col {
+        flex: 1;
+        background: #222;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+
+    /* BIG CLOCKS */
+    .clock-col {
+        font-size: 70px;
+    }
+
+    .clock-label {
+        font-size: 25px;
+        opacity: 0.8;
+    }
+
     button {
         padding: 10px 20px;
         font-size: 20px;
@@ -29,9 +58,11 @@
         color: #fff;
         border: none;
     }
+
     button:hover {
         background: #666;
     }
+
     input {
         font-size: 20px;
         padding: 10px;
@@ -42,76 +73,41 @@
         border-radius: 8px;
     }
 
-    /* Side-by-side layout */
-    .time-row {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
+    ul {
+        list-style: none;
+        padding-left: 0;
     }
 
-    /* BIGGER CLOCKS */
-    .time-col {
-        flex: 1;
-        background: #222;
-        padding: 20px;
-        border-radius: 12px;
-        font-size: 70px;   /* MASSIVE CLOCK SIZE */
-        box-shadow: 0 0 10px rgba(255,255,255,0.1);
-    }
-
-    .time-label {
-        font-size: 25px;
-        opacity: 0.8;
+    li {
+        margin: 8px 0;
     }
 </style>
 </head>
 
 <body>
 
-<h1 style="color:#fff;">MY KITCHEN</h1>
+<h1>MY KITCHEN</h1>
 
-<!-- SIDE-BY-SIDE CLOCKS -->
-<div class="time-row">
-    <div class="time-col">
-        <div class="time-label">🇬🇧 LOCAL TIME</div>
+<!-- CLOCKS -->
+<div class="row">
+    <div class="col clock-col">
+        <div class="clock-label">🇬🇧 LOCAL TIME</div>
         <div id="localTime">--:--:--</div>
     </div>
 
-    <div class="time-col">
-        <div class="time-label">🇵🇭 PH TIME</div>
+    <div class="col clock-col">
+        <div class="clock-label">🇵🇭 PH TIME</div>
         <div id="phTime">--:--:--</div>
     </div>
 </div>
 
-<br>
-
-<div class="box">
+<!-- WEATHER (full width) -->
+<div class="full-box">
     🌤 HENDON WEATHER: <span id="weather">Loading weather...</span>
 </div>
 
-<!-- REMINDER + SHOPPING LIST SIDE BY SIDE -->
-<div class="time-row">
-
-    <!-- REMINDER COLUMN -->
-    <div class="time-col" style="font-size:22px;">
-        🔔 REMINDER<br><br>
-        <input id="reminderInput" placeholder="Add reminder">
-        <button onclick="addReminder()">Add</button>
-        <ul id="reminderList" style="text-align:left;font-size:20px;"></ul>
-    </div>
-
-    <!-- SHOPPING LIST COLUMN -->
-    <div class="time-col" style="font-size:22px;">
-        🛒 SHOPPING LIST<br><br>
-        <input id="itemInput" placeholder="Add item">
-        <button onclick="addItem()">Add</button>
-        <ul id="list" style="text-align:left;font-size:20px;"></ul>
-    </div>
-
-</div>
-
-<!-- TIMER -->
-<div class="box">
+<!-- TIMER (full width) -->
+<div class="full-box">
     ⏱ TIMER: <span id="timer">00:00</span><br><br>
 
     <button onclick="startCountdown(5)">5 min</button>
@@ -125,7 +121,26 @@
     <button onclick="resetCountdown()">Reset</button>
 </div>
 
-<!-- CLOCKS -->
+<!-- REMINDER + SHOPPING LIST SIDE BY SIDE -->
+<div class="row">
+
+    <div class="col" style="font-size:22px;">
+        🔔 REMINDER<br><br>
+        <input id="reminderInput" placeholder="Add reminder">
+        <button onclick="addReminder()">Add</button>
+        <ul id="reminderList" style="text-align:left;font-size:20px;"></ul>
+    </div>
+
+    <div class="col" style="font-size:22px;">
+        🛒 SHOPPING LIST<br><br>
+        <input id="itemInput" placeholder="Add item">
+        <button onclick="addItem()">Add</button>
+        <ul id="list" style="text-align:left;font-size:20px;"></ul>
+    </div>
+
+</div>
+
+<!-- CLOCK SCRIPT -->
 <script>
 function updateClocks() {
     var nowUK = new Date();
@@ -146,7 +161,7 @@ updateClocks();
 setInterval(updateClocks, 1000);
 </script>
 
-<!-- WEATHER -->
+<!-- WEATHER SCRIPT -->
 <script>
 function loadWeather() {
     var xhr = new XMLHttpRequest();
@@ -176,7 +191,7 @@ loadWeather();
 setInterval(loadWeather, 600000);
 </script>
 
-<!-- COUNTDOWN TIMER -->
+<!-- COUNTDOWN TIMER SCRIPT -->
 <script>
 var countdownSeconds = 0;
 var countdownInterval = null;
@@ -213,4 +228,80 @@ function resetCountdown() {
     updateCountdownDisplay();
 }
 
-function
+function updateCountdownDisplay() {
+    var mins = Math.floor(countdownSeconds / 60);
+    var secs = countdownSeconds % 60;
+
+    document.getElementById("timer").innerHTML =
+        ("0" + mins).slice(-2) + ":" + ("0" + secs).slice(-2);
+}
+</script>
+
+<!-- REMINDER SCRIPT -->
+<script>
+function loadReminders() {
+    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+    var html = "";
+    for (var i = 0; i < items.length; i++) {
+        html += "<li>" + items[i] +
+                " <button onclick='removeReminder(" + i + ")'>❌</button></li>";
+    }
+    document.getElementById("reminderList").innerHTML = html;
+}
+
+function addReminder() {
+    var item = document.getElementById("reminderInput").value;
+    if (item.length > 0) {
+        var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+        items.push(item);
+        localStorage.setItem("reminderList", JSON.stringify(items));
+        document.getElementById("reminderInput").value = "";
+        loadReminders();
+    }
+}
+
+function removeReminder(index) {
+    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
+    items.splice(index, 1);
+    localStorage.setItem("reminderList", JSON.stringify(items));
+    loadReminders();
+}
+
+loadReminders();
+</script>
+
+<!-- SHOPPING LIST SCRIPT -->
+<script>
+function loadList() {
+    var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
+    var html = "";
+    for (var i = 0; i < items.length; i++) {
+        html += "<li>" + items[i] +
+                " <button onclick='removeItem(" + i + ")'>❌</button></li>";
+    }
+    document.getElementById("list").innerHTML = html;
+}
+
+function addItem() {
+    var item = document.getElementById("itemInput").value;
+    if (item.length > 0) {
+        var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
+        items.push(item);
+        localStorage.setItem("shoppingList", JSON.stringify(items));
+        document.getElementById("itemInput").value = "";
+        loadList();
+    }
+}
+
+function removeItem(index) {
+    var items = JSON.parse(localStorage.getItem("shoppingList") || "[]");
+    items.splice(index, 1);
+    localStorage.setItem("shoppingList", JSON.stringify(items));
+    loadList();
+}
+
+loadList();
+</script>
+
+</body>
+</html>
