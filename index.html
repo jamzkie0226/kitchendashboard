@@ -41,12 +41,18 @@
 
     /* BIG CLOCKS */
     .clock-col {
-        font-size: 70px;
+        font-size: 55px;
     }
 
     .clock-label {
         font-size: 25px;
         opacity: 0.8;
+    }
+
+    .clock-day {
+        font-size: 22px;
+        opacity: 0.7;
+        margin-top: 10px;
     }
 
     button {
@@ -93,6 +99,7 @@
     <div class="col clock-col">
         <div class="clock-label">🇬🇧 LOCAL TIME</div>
         <div id="localTime">--:--:--</div>
+        <div id="localDay" class="clock-day">---</div>
     </div>
 
     <div class="col clock-col">
@@ -109,7 +116,6 @@
 <!-- REMINDER + TIMER SIDE BY SIDE -->
 <div class="row">
 
-    <!-- REMINDER COLUMN -->
     <div class="col" style="font-size:22px;">
         🔔 REMINDER<br><br>
         <input id="reminderInput" placeholder="Add reminder">
@@ -117,7 +123,6 @@
         <ul id="reminderList" style="text-align:left;font-size:20px;"></ul>
     </div>
 
-    <!-- TIMER COLUMN -->
     <div class="col" style="font-size:22px;">
         ⏱ TIMER: <span id="timer">00:00</span><br><br>
 
@@ -141,19 +146,30 @@
 
 <!-- CLOCK SCRIPT -->
 <script>
+function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var seconds = date.getSeconds();
+    var ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    if (hours === 0) hours = 12;
+
+    return (
+        ("0" + hours).slice(-2) + ":" +
+        ("0" + minutes).slice(-2) + ":" +
+        ("0" + seconds).slice(-2) + " " + ampm
+    );
+}
+
 function updateClocks() {
     var nowUK = new Date();
     var nowPH = new Date(nowUK.getTime() + (8 * 60 * 60 * 1000));
 
-    document.getElementById("localTime").innerHTML =
-        ("0" + nowUK.getHours()).slice(-2) + ":" +
-        ("0" + nowUK.getMinutes()).slice(-2) + ":" +
-        ("0" + nowUK.getSeconds()).slice(-2);
+    document.getElementById("localTime").innerHTML = formatAMPM(nowUK);
+    document.getElementById("phTime").innerHTML = formatAMPM(nowPH);
 
-    document.getElementById("phTime").innerHTML =
-        ("0" + nowPH.getHours()).slice(-2) + ":" +
-        ("0" + nowPH.getMinutes()).slice(-2) + ":" +
-        ("0" + nowPH.getSeconds()).slice(-2);
+    var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    document.getElementById("localDay").innerHTML = days[nowUK.getDay()];
 }
 
 updateClocks();
@@ -182,96 +198,4 @@ function loadWeather() {
         }
     };
 
-    xhr.open("GET", url, true);
-    xhr.send();
-}
-
-loadWeather();
-setInterval(loadWeather, 600000);
-</script>
-
-<!-- COUNTDOWN TIMER SCRIPT -->
-<script>
-var countdownSeconds = 0;
-var countdownInterval = null;
-
-function startCountdown(minutes) {
-    stopCountdown();
-    countdownSeconds = minutes * 60;
-    updateCountdownDisplay();
-
-    countdownInterval = setInterval(function () {
-        countdownSeconds--;
-
-        if (countdownSeconds <= 0) {
-            countdownSeconds = 0;
-            updateCountdownDisplay();
-            clearInterval(countdownInterval);
-            countdownInterval = null;
-
-            var audio = document.getElementById("alarmSound");
-            audio.play();
-
-            alert("Time's up!");
-            return;
-        }
-
-        updateCountdownDisplay();
-    }, 1000);
-}
-
-function stopCountdown() {
-    clearInterval(countdownInterval);
-    countdownInterval = null;
-}
-
-function resetCountdown() {
-    stopCountdown();
-    countdownSeconds = 0;
-    updateCountdownDisplay();
-}
-
-function updateCountdownDisplay() {
-    var mins = Math.floor(countdownSeconds / 60);
-    var secs = countdownSeconds % 60;
-
-    document.getElementById("timer").innerHTML =
-        ("0" + mins).slice(-2) + ":" + ("0" + secs).slice(-2);
-}
-</script>
-
-<!-- REMINDER SCRIPT -->
-<script>
-function loadReminders() {
-    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
-    var html = "";
-    for (var i = 0; i < items.length; i++) {
-        html += "<li>" + items[i] +
-                " <button onclick='removeReminder(" + i + ")'>❌</button></li>";
-    }
-    document.getElementById("reminderList").innerHTML = html;
-}
-
-function addReminder() {
-    var item = document.getElementById("reminderInput").value;
-    if (item.length > 0) {
-        var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
-        items.push(item);
-        localStorage.setItem("reminderList", JSON.stringify(items));
-        document.getElementById("reminderInput").value = "";
-        loadReminders();
-    }
-}
-
-function removeReminder(index) {
-    var items = JSON.parse(localStorage.getItem("reminderList") || "[]");
-    items.splice(index, 1);
-    localStorage.setItem("reminderList", JSON.stringify(items));
-    loadReminders();
-}
-
-loadReminders();
-</script>
-
-</body>
-</html>
+    xhr.open("GET", url, true
