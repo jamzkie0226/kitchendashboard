@@ -24,15 +24,29 @@
       justify-content: space-between;
       margin-bottom: 15px;
     }
-    .card {
+
+    /* LOCAL TIME BOX — BIGGER */
+    .card-local {
       background: #1c1c1c;
       border-radius: 12px;
-      padding: 25px;
-      flex: 1;
+      padding: 30px;
+      flex: 2;                 /* bigger width */
       margin: 10px;
       box-sizing: border-box;
-      min-height: 160px;
+      min-height: 200px;       /* taller */
     }
+
+    /* PH TIME BOX — SMALLER */
+    .card-ph {
+      background: #1c1c1c;
+      border-radius: 12px;
+      padding: 20px;
+      flex: 1;                 /* smaller width */
+      margin: 10px;
+      box-sizing: border-box;
+      min-height: 150px;       /* shorter */
+    }
+
     .title {
       font-size: 16px;
       color: #aaa;
@@ -62,6 +76,7 @@
       color: #ccc;
       margin-top: 8px;
     }
+
     .weather-main {
       font-size: 28px;
       margin-bottom: 6px;
@@ -77,13 +92,13 @@
 
     <!-- Time row -->
     <div class="row">
-      <div class="card">
+      <div class="card-local">
         <div class="title">London Time</div>
         <div id="time-local" class="time-local">--:--</div>
         <div id="date-local" class="date"></div>
       </div>
 
-      <div class="card">
+      <div class="card-ph">
         <div class="title">Philippines Time</div>
         <div id="time-ph" class="time-ph">--:--</div>
         <div id="date-ph" class="date"></div>
@@ -92,7 +107,7 @@
 
     <!-- Weather row -->
     <div class="row">
-      <div class="card">
+      <div class="card-local">
         <div class="title">Weather (London)</div>
         <div id="weather-main" class="weather-main">Loading...</div>
         <div id="weather-detail" class="weather-detail"></div>
@@ -115,7 +130,6 @@
       if (m < 10) m = "0" + m;
       if (s < 10) s = "0" + s;
 
-      // AM/PM larger and clearer
       return h + ":" + m + ":" + s + " <span style='font-size:32px; vertical-align:middle;'>" + ampm + "</span>";
     }
 
