@@ -41,18 +41,20 @@
       letter-spacing: 1px;
     }
 
-    /* LOCAL CLOCK — MUCH BIGGER */
+    /* LOCAL CLOCK — HUGE */
     .time-local {
-      font-size: 95px;     /* bigger local clock */
+      font-size: 95px;
       font-weight: 700;
       margin-top: 10px;
+      line-height: 1.0;
     }
 
     /* PH CLOCK — SMALLER */
     .time-ph {
-      font-size: 55px;     /* smaller PH clock */
+      font-size: 55px;
       font-weight: 700;
       margin-top: 10px;
+      line-height: 1.0;
     }
 
     .date {
@@ -100,7 +102,7 @@
   </div>
 
   <script>
-    // --- 12-hour formatter (no GMT) ---
+    // --- 12-hour formatter with improved AM/PM ---
     function formatTime12(dateObj) {
       var h = dateObj.getHours();
       var m = dateObj.getMinutes();
@@ -113,7 +115,8 @@
       if (m < 10) m = "0" + m;
       if (s < 10) s = "0" + s;
 
-      return h + ":" + m + ":" + s + " " + ampm;
+      // AM/PM larger and clearer
+      return h + ":" + m + ":" + s + " <span style='font-size:32px; vertical-align:middle;'>" + ampm + "</span>";
     }
 
     // --- Time handling (London & Philippines) ---
