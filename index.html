@@ -13,36 +13,25 @@
       color: #eee;
     }
     .container {
-      display: -webkit-box;
-      display: -ms-flexbox;
       display: flex;
-      -webkit-box-orient: vertical;
-      -webkit-box-direction: normal;
-      -ms-flex-direction: column;
       flex-direction: column;
       height: 100vh;
       padding: 10px;
       box-sizing: border-box;
     }
     .row {
-      display: -webkit-box;
-      display: -ms-flexbox;
       display: flex;
-      -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
       justify-content: space-between;
       margin-bottom: 15px;
     }
     .card {
       background: #1c1c1c;
       border-radius: 12px;
-      padding: 25px;              /* bigger box */
-      -webkit-box-flex: 1;
-      -ms-flex: 1;
+      padding: 25px;
       flex: 1;
-      margin: 10px;               /* more spacing */
+      margin: 10px;
       box-sizing: border-box;
-      min-height: 160px;          /* taller box */
+      min-height: 160px;
     }
     .title {
       font-size: 16px;
@@ -52,7 +41,7 @@
       letter-spacing: 1px;
     }
     .time {
-      font-size: 60px;            /* bigger clock font */
+      font-size: 60px;
       font-weight: 700;
       margin-top: 10px;
     }
@@ -102,15 +91,25 @@
 
   <script>
     // --- Time handling (London & Philippines) ---
+    function formatTimeNoGMT(dateObj) {
+      // Manual formatting to avoid GMT text
+      var h = dateObj.getHours();
+      var m = dateObj.getMinutes();
+      var s = dateObj.getSeconds();
+
+      // Pad numbers
+      if (h < 10) h = "0" + h;
+      if (m < 10) m = "0" + m;
+      if (s < 10) s = "0" + s;
+
+      return h + ":" + m + ":" + s;
+    }
+
     function updateTimes() {
       var now = new Date();
 
       // --- Local (London) ---
-      var localTime = now.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
+      var localTime = formatTimeNoGMT(now);
 
       var localDate = now.toLocaleDateString([], {
         weekday: 'short',
@@ -123,16 +122,9 @@
       document.getElementById('date-local').innerHTML = localDate;
 
       // --- PH time (manual offset because iOS 9 ignores timeZone) ---
-      // London (BST) = UTC+1
-      // Manila = UTC+8
-      // Difference = +7 hours
       var phNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
 
-      var phTime = phNow.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
+      var phTime = formatTimeNoGMT(phNow);
 
       var phDate = phNow.toLocaleDateString([], {
         weekday: 'short',
