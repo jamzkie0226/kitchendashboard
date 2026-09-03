@@ -1,157 +1,217 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>My Kitchen</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<style>
+  <meta charset="UTF-8">
+  <title>Kitchen Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
     body {
-        font-family: Arial;
-        background: #111;
-        color: #fff;
-        padding: 20px;
-        text-align: center;
+      margin: 0;
+      font-family: -apple-system, Helvetica, Arial, sans-serif;
+      background: #111;
+      color: #eee;
     }
-
+    .container {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      height: 100vh;
+      padding: 10px;
+      box-sizing: border-box;
+    }
     .row {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        margin-top: 20px;
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+      justify-content: space-between;
+      margin-bottom: 15px;
     }
-
-    .col {
-        flex: 1;
-        background: #222;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 0 10px rgba(255,255,255,0.1);
-        font-size: 22px;
+    .card {
+      background: #1c1c1c;
+      border-radius: 8px;
+      padding: 10px;
+      -webkit-box-flex: 1;
+      -ms-flex: 1;
+      flex: 1;
+      margin: 5px;
+      box-sizing: border-box;
     }
-
-    .clock-col {
-        font-size: 55px;
+    .title {
+      font-size: 14px;
+      color: #aaa;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-
-    .clock-label {
-        font-size: 25px;
-        opacity: 0.8;
+    .time {
+      font-size: 32px;
+      font-weight: 600;
     }
-
-    .clock-day {
-        font-size: 22px;
-        opacity: 0.7;
-        margin-top: 10px;
+    .date {
+      font-size: 14px;
+      color: #ccc;
+      margin-top: 4px;
     }
-
-    button {
-        padding: 10px 20px;
-        font-size: 20px;
-        margin: 10px;
-        border-radius: 10px;
-        background: #444;
-        color: #fff;
-        border: none;
+    .weather-main {
+      font-size: 24px;
+      margin-bottom: 4px;
     }
-
-    button:hover {
-        background: #666;
+    .weather-detail {
+      font-size: 14px;
+      color: #ccc;
     }
-
-    input {
-        font-size: 20px;
-        padding: 10px;
-        width: 80%;
-        background: #333;
-        color: #fff;
-        border: 1px solid #555;
-        border-radius: 8px;
-    }
-
-    ul {
-        list-style: none;
-        padding-left: 0;
-    }
-
-    li {
-        margin: 8px 0;
-    }
-</style>
+  </style>
 </head>
-
 <body>
-
-<h1>MY KITCHEN</h1>
-
-<!-- CLOCKS -->
-<div class="row">
-    <div class="col clock-col">
-        <div class="clock-label">🇬🇧 LOCAL TIME</div>
-        <div id="localTime">--:--:--</div>
-        <div id="localDay" class="clock-day">---</div>
+  <div class="container">
+    <!-- Time row -->
+    <div class="row">
+      <div class="card">
+        <div class="title">London Time</div>
+        <div id="time-local" class="time">--:--</div>
+        <div id="date-local" class="date"></div>
+      </div>
+      <div class="card">
+        <div class="title">Philippines Time</div>
+        <div id="time-ph" class="time">--:--</div>
+        <div id="date-ph" class="date"></div>
+      </div>
     </div>
 
-    <div class="col clock-col">
-        <div class="clock-label">🇵🇭 PH TIME</div>
-        <div id="phTime">--:--:--</div>
+    <!-- Weather row -->
+    <div class="row">
+      <div class="card">
+        <div class="title">Weather (London)</div>
+        <div id="weather-main" class="weather-main">Loading...</div>
+        <div id="weather-detail" class="weather-detail"></div>
+      </div>
     </div>
-</div>
+  </div>
 
-<!-- WEATHER -->
-<div class="row">
-    <div class="col">
-        ☁ HENDON WEATHER: <span id="weather">Loading weather...</span>
-    </div>
-</div>
+  <script>
+    // --- Time handling (London & Philippines) ---
+    function updateTimes() {
+      var now = new Date();
 
-<!-- REMINDER + TIMER -->
-<div class="row">
+      // Local (London) – relies on device timezone
+      var localOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      };
+      var localDateOptions = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      };
 
-    <div class="col">
-        🔔 REMINDER<br><br>
-        <input id="reminderInput" placeholder="Add reminder">
-        <button onclick="addReminder()">Add</button>
-        <ul id="reminderList" style="text-align:left;font-size:20px;"></ul>
-    </div>
+      var localTime = now.toLocaleTimeString([], localOptions);
+      var localDate = now.toLocaleDateString([], localDateOptions);
 
-    <div class="col">
-        ⏱ TIMER: <span id="timer">00:00</span><br><br>
+      document.getElementById('time-local').innerHTML = localTime;
+      document.getElementById('date-local').innerHTML = localDate;
 
-        <button onclick="startCountdown(5)">5 min</button>
-        <button onclick="startCountdown(10)">10 min</button>
-        <button onclick="startCountdown(15)">15 min</button>
-        <button onclick="startCountdown(20)">20 min</button>
-        <button onclick="startCountdown(30)">30 min</button>
+      // Philippines time (Asia/Manila)
+      // iOS 9 Safari supports IANA time zones in toLocaleString reasonably well.
+      var phOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'Asia/Manila'
+      };
+      var phDateOptions = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'Asia/Manila'
+      };
 
-        <br><br>
-        <button onclick="stopCountdown()">Stop</button>
-        <button onclick="resetCountdown()">Reset</button>
-    </div>
+      var phTime = now.toLocaleTimeString([], phOptions);
+      var phDate = now.toLocaleDateString([], phDateOptions);
 
-</div>
+      document.getElementById('time-ph').innerHTML = phTime;
+      document.getElementById('date-ph').innerHTML = phDate;
+    }
 
-<!-- TIMER SOUND -->
-<audio id="alarmSound">
-    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
-</audio>
+    setInterval(updateTimes, 1000);
+    updateTimes();
 
-<!-- CLOCK SCRIPT -->
-<script type="text/javascript">
-function pad(n) { return ("0" + n).slice(-2); }
+    // --- Weather handling (Open-Meteo, no API key) ---
+    // Coordinates for London (you can change these if needed)
+    var latitude = 51.5074;
+    var longitude = -0.1278;
 
-function formatAMPM(date) {
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var seconds = date.getSeconds();
-    var ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    if (hours === 0) hours = 12;
-    return pad(hours) + ":" + pad(minutes) + ":" + pad(seconds) + " " + ampm;
-}
+    function fetchWeather() {
+      var url = "https://api.open-meteo.com/v1/forecast"
+        + "?latitude=" + latitude
+        + "&longitude=" + longitude
+        + "&current_weather=true";
 
-function updateClocks() {
-    var nowUK = new Date();
-    var nowPH = new Date
+      // Use XMLHttpRequest for better compatibility with older Safari
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            try {
+              var data = JSON.parse(xhr.responseText);
+              if (data && data.current_weather) {
+                var cw = data.current_weather;
+                var temp = cw.temperature; // °C
+                var wind = cw.windspeed;   // km/h
+                var code = cw.weathercode;
+
+                var description = weatherCodeToText(code);
+
+                document.getElementById('weather-main').innerHTML =
+                  temp + "°C, " + description;
+
+                document.getElementById('weather-detail').innerHTML =
+                  "Wind: " + wind + " km/h";
+              } else {
+                document.getElementById('weather-main').innerHTML = "No data";
+                document.getElementById('weather-detail').innerHTML = "";
+              }
+            } catch (e) {
+              document.getElementById('weather-main').innerHTML = "Error parsing";
+              document.getElementById('weather-detail').innerHTML = "";
+            }
+          } else {
+            document.getElementById('weather-main').innerHTML = "Weather unavailable";
+            document.getElementById('weather-detail').innerHTML = "";
+          }
+        }
+      };
+      xhr.send();
+    }
+
+    // Simple mapping of Open-Meteo weather codes to text
+    function weatherCodeToText(code) {
+      // Basic subset
+      if (code === 0) return "Clear sky";
+      if (code === 1 || code === 2) return "Partly cloudy";
+      if (code === 3) return "Overcast";
+      if (code === 45 || code === 48) return "Fog";
+      if (code === 51 || code === 53 || code === 55) return "Drizzle";
+      if (code === 61 || code === 63 || code === 65) return "Rain";
+      if (code === 71 || code === 73 || code === 75) return "Snow";
+      if (code === 80 || code === 81 || code === 82) return "Rain showers";
+      if (code === 95) return "Thunderstorm";
+      return "Unknown";
+    }
+
+    // Fetch on load and every 10 minutes
+    fetchWeather();
+    setInterval(fetchWeather, 10 * 60 * 1000);
+  </script>
+</body>
+</html>
