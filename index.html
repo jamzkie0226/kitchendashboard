@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Kitchen Dashboard</title>
+
+  <!-- Enable fullscreen kiosk mode on iOS 9 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -11,6 +16,7 @@
       font-family: -apple-system, Helvetica, Arial, sans-serif;
       background: #111;
       color: #eee;
+      overflow: hidden; /* helps hide scrollbars */
     }
     .container {
       display: flex;
@@ -29,11 +35,11 @@
     .card-local {
       background: #1c1c1c;
       border-radius: 12px;
-      padding: 30px;
-      flex: 2;                 /* bigger width */
+      padding: 35px;
+      flex: 2;
       margin: 10px;
       box-sizing: border-box;
-      min-height: 200px;       /* taller */
+      min-height: 220px;
     }
 
     /* PH TIME BOX — SMALLER */
@@ -41,10 +47,10 @@
       background: #1c1c1c;
       border-radius: 12px;
       padding: 20px;
-      flex: 1;                 /* smaller width */
+      flex: 1;
       margin: 10px;
       box-sizing: border-box;
-      min-height: 150px;       /* shorter */
+      min-height: 150px;
     }
 
     .title {
@@ -117,20 +123,18 @@
   </div>
 
   <script>
-    // --- 12-hour formatter with improved AM/PM ---
+    // --- 12-hour formatter (NO SECONDS) ---
     function formatTime12(dateObj) {
       var h = dateObj.getHours();
       var m = dateObj.getMinutes();
-      var s = dateObj.getSeconds();
 
       var ampm = h >= 12 ? "PM" : "AM";
       h = h % 12;
       if (h === 0) h = 12;
 
       if (m < 10) m = "0" + m;
-      if (s < 10) s = "0" + s;
 
-      return h + ":" + m + ":" + s + " <span style='font-size:32px; vertical-align:middle;'>" + ampm + "</span>";
+      return h + ":" + m + " <span style='font-size:32px; vertical-align:middle;'>" + ampm + "</span>";
     }
 
     // --- Time handling (London & Philippines) ---
