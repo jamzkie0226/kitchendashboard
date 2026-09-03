@@ -2,47 +2,763 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Kitchen</title>
-<style>
-    body {
-        font-family: Arial;
-        background: #111;
-        color: #fff;
-        padding: 20px;
-        text-align: center;
-    }
 
+<style type="text/css">
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #111;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    padding: 12px;
+    text-align: center;
+    -webkit-text-size-adjust: 100%;
+}
+
+h1 {
+    font-size: 32px;
+    margin: 5px 0 12px 0;
+}
+
+.row {
+    width: 96%;
+    max-width: 1100px;
+    margin: 10px auto;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+}
+
+.box {
+    background: #222;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 0 5px;
+    box-sizing: border-box;
+    -webkit-box-flex: 1;
+    flex: 1;
+    box-shadow: 0 2px 10px rgba(255,255,255,0.08);
+}
+
+.title {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.clock {
+    font-size: 46px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.date {
+    font-size: 17px;
+    opacity: .75;
+    margin-top: 6px;
+}
+
+.weather-temp {
+    font-size: 38px;
+    font-weight: bold;
+}
+
+.weather-desc {
+    font-size: 20px;
+    margin-top: 4px;
+}
+
+.small {
+    font-size: 16px;
+    opacity: .75;
+    margin-top: 7px;
+}
+
+input, textarea {
+    width: 90%;
+    box-sizing: border-box;
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    -webkit-appearance: none;
+}
+
+textarea {
+    min-height: 110px;
+}
+
+button {
+    background: #444;
+    color: #fff;
+    border: 0;
+    border-radius: 9px;
+    padding: 10px 16px;
+    margin: 6px 3px;
+    font-size: 18px;
+    -webkit-appearance: none;
+}
+
+button:active {
+    background: #666;
+}
+
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 10px auto 0 auto;
+    width: 92%;
+    text-align: left;
+}
+
+.list li {
+    background: #333;
+    border-radius: 7px;
+    padding: 8px;
+    margin: 6px 0;
+    font-size: 18px;
+}
+
+.delete {
+    float: right;
+    font-size: 14px;
+    padding: 4px 8px;
+    margin: -2px 0 0 5px;
+}
+
+#timer {
+    font-size: 42px;
+    font-weight: bold;
+}
+
+.status {
+    font-size: 14px;
+    opacity: .65;
+    margin-top: 6px;
+}
+
+.recipe {
+    background: #333;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 7px 0;
+    text-align: left;
+}
+
+.recipe-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.recipe-text {
+    white-space: pre-wrap;
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+@media screen and (max-width: 650px) {
     .row {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        margin-top: 20px;
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
+        display: block;
+        width: 98%;
     }
 
-    .col {
-        flex: 1;
-        background: #222;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 0 10px rgba(255,255,255,0.1);
-        font-size: 22px;
+    .box {
+        margin: 8px 0;
     }
 
-    .clock-col {
-        font-size: 55px;
+    .clock {
+        font-size: 40px;
     }
+}
+</style>
+</head>
 
-    .clock-label {
-        font-size: 25px;
-        opacity: 0.8;
+<body>
+
+<h1>MY KITCHEN</h1>
+
+<!-- CLOCKS -->
+<div class="row">
+    <div class="box">
+        <div class="title">🇬🇧 UK LOCAL TIME</div>
+        <div id="ukTime" class="clock">--:--:--</div>
+        <div id="ukDate" class="date">---</div>
+    </div>
+
+    <div class="box">
+        <div class="title">🇵🇭 PHILIPPINES TIME</div>
+        <div id="phTime" class="clock">--:--:--</div>
+        <div id="phDate" class="date">---</div>
+    </div>
+</div>
+
+<!-- WEATHER -->
+<div class="row">
+    <div class="box">
+        <div class="title">🌤 HENDON WEATHER</div>
+        <div id="weatherTemp" class="weather-temp">--°C</div>
+        <div id="weatherDesc" class="weather-desc">Loading weather...</div>
+        <div id="weatherDetails" class="small"></div>
+        <div id="weatherStatus" class="status">Connecting...</div>
+        <button onclick="loadWeather()">↻ Refresh Weather</button>
+    </div>
+</div>
+
+<!-- REMINDERS + TIMER -->
+<div class="row">
+
+    <div class="box">
+        <div class="title">🔔 REMINDERS</div>
+        <input id="reminderInput" type="text" placeholder="Add reminder">
+        <br>
+        <button onclick="addReminder()">Add</button>
+        <ul id="reminderList" class="list"></ul>
+    </div>
+
+    <div class="box">
+        <div class="title">⏱ TIMER</div>
+        <div id="timer">00:00</div>
+        <button onclick="startTimer(1)">1 min</button>
+        <button onclick="startTimer(5)">5 min</button>
+        <button onclick="startTimer(10)">10 min</button>
+        <button onclick="startTimer(15)">15 min</button>
+        <br>
+        <button onclick="stopTimer()">Stop</button>
+        <button onclick="resetTimer()">Reset</button>
+    </div>
+
+</div>
+
+<!-- SHOPPING LIST -->
+<div class="row">
+    <div class="box">
+        <div class="title">🛒 SHOPPING LIST</div>
+        <input id="shoppingInput" type="text" placeholder="Add item">
+        <br>
+        <button onclick="addShopping()">Add</button>
+        <ul id="shoppingList" class="list"></ul>
+    </div>
+</div>
+
+<!-- NOTES -->
+<div class="row">
+    <div class="box">
+        <div class="title">📝 NOTES</div>
+        <textarea id="notes" placeholder="Write a kitchen note..."></textarea>
+        <br>
+        <button onclick="saveNotes()">Save Notes</button>
+        <button onclick="clearNotes()">Clear</button>
+        <div id="notesStatus" class="status"></div>
+    </div>
+</div>
+
+<!-- RECIPES -->
+<div class="row">
+    <div class="box">
+        <div class="title">🍳 RECIPES</div>
+        <input id="recipeName" type="text" placeholder="Recipe name">
+        <br><br>
+        <textarea id="recipeText" placeholder="Ingredients and instructions..."></textarea>
+        <br>
+        <button onclick="addRecipe()">Save Recipe</button>
+        <div id="recipeList"></div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+/* ==========================================================
+   COMPATIBILITY
+   Written deliberately for old Safari / iOS 9.3.5.
+   No fetch(), no arrow functions, no let/const, no template
+   literals, and no Intl timezone features.
+   ========================================================== */
+
+function pad(n) {
+    return n < 10 ? "0" + n : "" + n;
+}
+
+var days = ["Sunday","Monday","Tuesday","Wednesday",
+            "Thursday","Friday","Saturday"];
+
+var months = ["January","February","March","April","May","June",
+              "July","August","September","October","November","December"];
+
+function lastSunday(year, month) {
+    var d = new Date(year, month + 1, 0);
+    return d.getDate() - d.getDay();
+}
+
+/* UK GMT/BST calculation */
+function ukSummerTime(d) {
+    var y = d.getUTCFullYear();
+    var startDay = lastSunday(y, 2);
+    var endDay = lastSunday(y, 9);
+
+    /* BST starts 01:00 UTC on last Sunday in March
+       and ends 01:00 UTC on last Sunday in October. */
+    var start = Date.UTC(y, 2, startDay, 1, 0, 0);
+    var end = Date.UTC(y, 9, endDay, 1, 0, 0);
+    var t = d.getTime();
+
+    return t >= start && t < end;
+}
+
+function updateClocks() {
+    var now = new Date();
+
+    /* UTC milliseconds */
+    var utc = now.getTime() + now.getTimezoneOffset() * 60000;
+
+    /* UK */
+    var ukOffset = ukSummerTime(now) ? 1 : 0;
+    var uk = new Date(utc + ukOffset * 3600000);
+
+    document.getElementById("ukTime").innerHTML =
+        pad(uk.getHours()) + ":" +
+        pad(uk.getMinutes()) + ":" +
+        pad(uk.getSeconds());
+
+    document.getElementById("ukDate").innerHTML =
+        days[uk.getDay()] + ", " +
+        uk.getDate() + " " +
+        months[uk.getMonth()] + " " +
+        uk.getFullYear();
+
+    /* Philippines = UTC+8 all year */
+    var ph = new Date(utc + 8 * 3600000);
+
+    document.getElementById("phTime").innerHTML =
+        pad(ph.getHours()) + ":" +
+        pad(ph.getMinutes()) + ":" +
+        pad(ph.getSeconds());
+
+    document.getElementById("phDate").innerHTML =
+        days[ph.getDay()] + ", " +
+        ph.getDate() + " " +
+        months[ph.getMonth()] + " " +
+        ph.getFullYear();
+}
+
+updateClocks();
+setInterval(updateClocks, 1000);
+
+
+/* ==========================================================
+   WEATHER
+   Open-Meteo
+   Hendon: approximately 51.59 N, -0.22 W
+   XMLHttpRequest is used for old Safari compatibility.
+   ========================================================== */
+
+function weatherText(code) {
+    var a = {
+        0:"Clear sky",
+        1:"Mainly clear",
+        2:"Partly cloudy",
+        3:"Overcast",
+        45:"Fog",
+        48:"Fog",
+        51:"Light drizzle",
+        53:"Drizzle",
+        55:"Heavy drizzle",
+        56:"Freezing drizzle",
+        57:"Freezing drizzle",
+        61:"Light rain",
+        63:"Rain",
+        65:"Heavy rain",
+        66:"Freezing rain",
+        67:"Freezing rain",
+        71:"Light snow",
+        73:"Snow",
+        75:"Heavy snow",
+        77:"Snow grains",
+        80:"Light showers",
+        81:"Showers",
+        82:"Heavy showers",
+        85:"Snow showers",
+        86:"Heavy snow showers",
+        95:"Thunderstorm",
+        96:"Thunderstorm",
+        99:"Thunderstorm"
+    };
+
+    return a[code] || "Weather update";
+}
+
+function weatherIcon(code) {
+    if (code === 0) return "☀️";
+    if (code === 1 || code === 2) return "🌤️";
+    if (code === 3) return "☁️";
+    if (code === 45 || code === 48) return "🌫️";
+    if (code >= 51 && code <= 57) return "🌦️";
+    if (code >= 61 && code <= 67) return "🌧️";
+    if (code >= 71 && code <= 77) return "❄️";
+    if (code >= 80 && code <= 82) return "🌦️";
+    if (code >= 85 && code <= 86) return "🌨️";
+    if (code >= 95) return "⛈️";
+    return "🌤️";
+}
+
+function loadWeather() {
+    var temp = document.getElementById("weatherTemp");
+    var desc = document.getElementById("weatherDesc");
+    var details = document.getElementById("weatherDetails");
+    var status = document.getElementById("weatherStatus");
+
+    temp.innerHTML = "--°C";
+    desc.innerHTML = "Loading weather...";
+    details.innerHTML = "";
+    status.innerHTML = "Connecting to weather service...";
+
+    var url =
+        "https://api.open-meteo.com/v1/forecast" +
+        "?latitude=51.59" +
+        "&longitude=-0.22" +
+        "&current=temperature_2m,weather_code,is_day" +
+        "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
+        "&temperature_unit=celsius" +
+        "&timezone=Europe%2FLondon" +
+        "&forecast_days=1";
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState !== 4) {
+            return;
+        }
+
+        if (xhr.status === 200) {
+            try {
+                var data = JSON.parse(xhr.responseText);
+
+                var currentTemp = Math.round(data.current.temperature_2m);
+                var code = data.current.weather_code;
+                var minTemp = Math.round(data.daily.temperature_2m_min[0]);
+                var maxTemp = Math.round(data.daily.temperature_2m_max[0]);
+                var rain = data.daily.precipitation_probability_max[0];
+
+                temp.innerHTML = weatherIcon(code) + " " + currentTemp + "°C";
+                desc.innerHTML = weatherText(code);
+
+                details.innerHTML =
+                    "Today: " + minTemp + "°C to " + maxTemp +
+                    "°C &nbsp; | &nbsp; Rain chance: " + rain + "%";
+
+                var d = new Date();
+                status.innerHTML =
+                    "Updated " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+
+            } catch (e) {
+                temp.innerHTML = "--°C";
+                desc.innerHTML = "Weather unavailable";
+                status.innerHTML = "Could not read weather data.";
+            }
+        } else {
+            temp.innerHTML = "--°C";
+            desc.innerHTML = "Weather unavailable";
+            status.innerHTML =
+                "Could not connect. Check Wi-Fi.";
+        }
+    };
+
+    xhr.onerror = function() {
+        temp.innerHTML = "--°C";
+        desc.innerHTML = "Weather unavailable";
+        status.innerHTML =
+            "Check Wi-Fi and internet connection.";
+    };
+
+    try {
+        xhr.open("GET", url, true);
+        xhr.send(null);
+    } catch (e) {
+        temp.innerHTML = "--°C";
+        desc.innerHTML = "Weather unavailable";
+        status.innerHTML = "Connection error.";
     }
+}
 
-    .clock-day {
-        font-size: 22px;
-        opacity: 0.7;
-        margin-top: 10px;
+loadWeather();
+setInterval(loadWeather, 1800000);
+
+
+/* ==========================================================
+   SAFE LOCAL STORAGE HELPERS
+   ========================================================== */
+
+function getStore(key, defaultValue) {
+    try {
+        var value = localStorage.getItem(key);
+        if (value === null) {
+            return defaultValue;
+        }
+        return JSON.parse(value);
+    } catch (e) {
+        return defaultValue;
     }
+}
 
+function setStore(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {}
+}
+
+
+/* ==========================================================
+   REMINDERS
+   ========================================================== */
+
+function renderReminders() {
+    var items = getStore("kitchenReminders", []);
+    var list = document.getElementById("reminderList");
+    list.innerHTML = "";
+
+    var i;
+    for (i = 0; i < items.length; i++) {
+        var li = document.createElement("li");
+
+        li.innerHTML =
+            '<button class="delete" onclick="deleteReminder(' +
+            i + ')">X</button>' +
+            items[i];
+
+        list.appendChild(li);
+    }
+}
+
+function addReminder() {
+    var input = document.getElementById("reminderInput");
+    var text = input.value.replace(/^\s+|\s+$/g, "");
+
+    if (text === "") return;
+
+    var items = getStore("kitchenReminders", []);
+    items.push(text);
+    setStore("kitchenReminders", items);
+
+    input.value = "";
+    renderReminders();
+}
+
+function deleteReminder(index) {
+    var items = getStore("kitchenReminders", []);
+    items.splice(index, 1);
+    setStore("kitchenReminders", items);
+    renderReminders();
+}
+
+renderReminders();
+
+
+/* ==========================================================
+   TIMER
+   ========================================================== */
+
+var timerSeconds = 0;
+var timerID = null;
+
+function timerDisplay() {
+    var m = Math.floor(timerSeconds / 60);
+    var s = timerSeconds % 60;
+
+    document.getElementById("timer").innerHTML =
+        pad(m) + ":" + pad(s);
+}
+
+function startTimer(minutes) {
+    stopTimer();
+
+    timerSeconds = minutes * 60;
+    timerDisplay();
+
+    timerID = setInterval(function() {
+        if (timerSeconds > 0) {
+            timerSeconds--;
+            timerDisplay();
+        } else {
+            stopTimer();
+            alert("Timer finished!");
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    if (timerID !== null) {
+        clearInterval(timerID);
+        timerID = null;
+    }
+}
+
+function resetTimer() {
+    stopTimer();
+    timerSeconds = 0;
+    timerDisplay();
+}
+
+timerDisplay();
+
+
+/* ==========================================================
+   SHOPPING LIST
+   ========================================================== */
+
+function renderShopping() {
+    var items = getStore("kitchenShopping", []);
+    var list = document.getElementById("shoppingList");
+    list.innerHTML = "";
+
+    var i;
+    for (i = 0; i < items.length; i++) {
+        var li = document.createElement("li");
+
+        li.innerHTML =
+            '<button class="delete" onclick="deleteShopping(' +
+            i + ')">X</button>' +
+            items[i];
+
+        list.appendChild(li);
+    }
+}
+
+function addShopping() {
+    var input = document.getElementById("shoppingInput");
+    var text = input.value.replace(/^\s+|\s+$/g, "");
+
+    if (text === "") return;
+
+    var items = getStore("kitchenShopping", []);
+    items.push(text);
+    setStore("kitchenShopping", items);
+
+    input.value = "";
+    renderShopping();
+}
+
+function deleteShopping(index) {
+    var items = getStore("kitchenShopping", []);
+    items.splice(index, 1);
+    setStore("kitchenShopping", items);
+    renderShopping();
+}
+
+renderShopping();
+
+
+/* ==========================================================
+   NOTES
+   ========================================================== */
+
+function loadNotes() {
+    try {
+        var text = localStorage.getItem("kitchenNotes");
+        if (text !== null) {
+            document.getElementById("notes").value = text;
+        }
+    } catch (e) {}
+}
+
+function saveNotes() {
+    try {
+        localStorage.setItem(
+            "kitchenNotes",
+            document.getElementById("notes").value
+        );
+
+        document.getElementById("notesStatus").innerHTML =
+            "Saved on this iPad.";
+    } catch (e) {
+        document.getElementById("notesStatus").innerHTML =
+            "Could not save notes.";
+    }
+}
+
+function clearNotes() {
+    document.getElementById("notes").value = "";
+
+    try {
+        localStorage.removeItem("kitchenNotes");
+    } catch (e) {}
+
+    document.getElementById("notesStatus").innerHTML =
+        "Notes cleared.";
+}
+
+loadNotes();
+
+
+/* ==========================================================
+   RECIPES
+   ========================================================== */
+
+function renderRecipes() {
+    var recipes = getStore("kitchenRecipes", []);
+    var container = document.getElementById("recipeList");
+    container.innerHTML = "";
+
+    var i;
+    for (i = 0; i < recipes.length; i++) {
+        var box = document.createElement("div");
+        box.className = "recipe";
+
+        box.innerHTML =
+            '<button class="delete" onclick="deleteRecipe(' +
+            i + ')">X</button>' +
+            '<div class="recipe-name">' +
+            recipes[i].name +
+            '</div>' +
+            '<div class="recipe-text">' +
+            recipes[i].text +
+            '</div>';
+
+        container.appendChild(box);
+    }
+}
+
+function addRecipe() {
+    var name = document.getElementById("recipeName").value
+        .replace(/^\s+|\s+$/g, "");
+
+    var text = document.getElementById("recipeText").value
+        .replace(/^\s+|\s+$/g, "");
+
+    if (name === "") return;
+
+    var recipes = getStore("kitchenRecipes", []);
+
+    recipes.push({
+        name: name,
+        text: text
+    });
+
+    setStore("kitchenRecipes", recipes);
+
+    document.getElementById("recipeName").value = "";
+    document.getElementById("recipeText").value = "";
+
+    renderRecipes();
+}
+
+function deleteRecipe(index) {
+    var recipes = getStore("kitchenRecipes", []);
+    recipes.splice(index, 1);
+    setStore("kitchenRecipes", recipes);
+    renderRecipes();
+}
+
+renderRecipes();
+
+</script>
+
+</body>
+</html>
