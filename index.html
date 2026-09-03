@@ -40,11 +40,21 @@
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-    .time {
-      font-size: 60px;
+
+    /* Bigger local clock */
+    .time-local {
+      font-size: 80px;
       font-weight: 700;
       margin-top: 10px;
     }
+
+    /* Smaller PH clock */
+    .time-ph {
+      font-size: 55px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
     .date {
       font-size: 16px;
       color: #ccc;
@@ -67,13 +77,13 @@
     <div class="row">
       <div class="card">
         <div class="title">London Time</div>
-        <div id="time-local" class="time">--:--</div>
+        <div id="time-local" class="time-local">--:--</div>
         <div id="date-local" class="date"></div>
       </div>
 
       <div class="card">
         <div class="title">Philippines Time</div>
-        <div id="time-ph" class="time">--:--</div>
+        <div id="time-ph" class="time-ph">--:--</div>
         <div id="date-ph" class="date"></div>
       </div>
     </div>
@@ -90,26 +100,28 @@
   </div>
 
   <script>
-    // --- Time handling (London & Philippines) ---
-    function formatTimeNoGMT(dateObj) {
-      // Manual formatting to avoid GMT text
+    // --- 12-hour formatter (no GMT) ---
+    function formatTime12(dateObj) {
       var h = dateObj.getHours();
       var m = dateObj.getMinutes();
       var s = dateObj.getSeconds();
 
-      // Pad numbers
-      if (h < 10) h = "0" + h;
+      var ampm = h >= 12 ? "PM" : "AM";
+      h = h % 12;
+      if (h === 0) h = 12;
+
       if (m < 10) m = "0" + m;
       if (s < 10) s = "0" + s;
 
-      return h + ":" + m + ":" + s;
+      return h + ":" + m + ":" + s + " " + ampm;
     }
 
+    // --- Time handling (London & Philippines) ---
     function updateTimes() {
       var now = new Date();
 
       // --- Local (London) ---
-      var localTime = formatTimeNoGMT(now);
+      var localTime = formatTime12(now);
 
       var localDate = now.toLocaleDateString([], {
         weekday: 'short',
@@ -121,10 +133,10 @@
       document.getElementById('time-local').innerHTML = localTime;
       document.getElementById('date-local').innerHTML = localDate;
 
-      // --- PH time (manual offset because iOS 9 ignores timeZone) ---
+      // --- PH time (manual +7 hours offset) ---
       var phNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
 
-      var phTime = formatTimeNoGMT(phNow);
+      var phTime = formatTime12(phNow);
 
       var phDate = phNow.toLocaleDateString([], {
         weekday: 'short',
